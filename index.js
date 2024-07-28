@@ -6,12 +6,10 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
-// Middleware to parse JSON request body
 app.use(express.json());
 
 app.post('/meal-planner', async (req, res) => {
   try {
-    // Use the request body received from Insomnia
     const requestBody = req.body;
 
     const headers = {
@@ -21,7 +19,6 @@ app.post('/meal-planner', async (req, res) => {
       'Authorization': 'Basic ' + base64.encode(`${process.env.EDAMAM_API_ID}:${process.env.EDAMAM_API_KEY}`)
     };
 
-    // Log headers to verify they are correct
     console.log('Headers:', headers);
 
     const response = await axios.post(
@@ -30,24 +27,11 @@ app.post('/meal-planner', async (req, res) => {
       { headers }
     );
 
-    // Send the API response back to Insomnia
     res.json(response.data);
+
   } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code that falls out of the range of 2xx
-      console.error('Error response data:', error.response.data);
-      console.error('Error response status:', error.response.status);
-      console.error('Error response headers:', error.response.headers);
-      res.status(error.response.status).send(error.response.data);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Error request data:', error.request);
-      res.status(500).send('No response received from the API.');
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error message:', error.message);
-      res.status(500).send('An error occurred while setting up the request.');
-    }
+  console.error('Error:', error);
+  res.status(500).send('An error occurred while processing your request.');
   }
 });
 
